@@ -1,35 +1,37 @@
 //create namespace
-PBT.namespace('data');
+PBT.scaffolding.namespace('data');
+//make namespace a publisher (that can 'subscribe' listeners)
+PBT.scaffolding.pubSub.makePublisher(PBT.data);
+
 
 //set up with methods
 PBT.data.setup=function(){
 
-	//Module to get and expose json string converted to object
-	//function param = 2-part map
-	//uri - what we hit to return json string
-	//lib - jQuery
-	//cbk - callback
-	this.jsonArr=function(){
+	var $=arguments[0], //jQuery
+		//Aliases
+		page=PBT.page,
+		that=this; //re-usable reference for inner function convention
 
-			//imported
-		var imported=arguments[0], //map
-			cbk=imported.cbk, //callback
-			uri=imported.uri,
-			$=imported.lib,
-			//local
-			jsonArr=[]; //returned json Array - updated asynchronously by reference
+	//PUBSUB============================================================================================================
 
-		//request and handle
+	this.pubSub=function(){
+
+		//namespace subscibes its listeners to... <------------------------------------------------------------listeners
+		//dataReceipt
+		this.subscribe(page.parseMedia,'dataReceipt');
+	};
+
+	//METHODS===========================================================================================================
+
+	//Get json w/map: uri:[resource locator]
+	this.getJson=function(map){
 		$.ajax({
-			url:uri,
+			url:map.uri,
 			dataType:'json',
 			success:function(data){
-				$(data).each(function(){jsonArr.push(this)});
-				cbk();
+				that.publish(data,'dataReceipt'); //------------------------------------------------------------------->
 			}
 		});
-
-		return jsonArr;
 	};
 };
 

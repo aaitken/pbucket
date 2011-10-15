@@ -1,6 +1,10 @@
-//initializations
-PBT.data.setup({lib:jQuery});
-PBT.page.setup({lib:jQuery});
+//make all methods available
+PBT.data.setup(jQuery);
+PBT.page.setup(jQuery);
 
-//kickoff
-PBT.page.getMedia();
+//set up pubsub
+PBT.data.pubSub();
+PBT.page.pubSub();
+
+//kick it off
+PBT.data.getJson({uri:'feed/slideshow.json'});

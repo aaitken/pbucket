@@ -1,71 +1,105 @@
 //create namespace
-PBT.namespace('page');
+PBT.scaffolding.namespace('page');
+//make namespace a publisher (that can 'subscribe' listeners)
+PBT.scaffolding.pubSub.makePublisher(PBT.page);
+
 
 //set up with methods
 PBT.page.setup=function(){
 
-		//imported
-	var imported=arguments[0],
-		$=imported.lib,
+	var	$=arguments[0], //jQuery
 		//aliases
-		data=PBT.data,
-		//private, shared
-		media; //set in getMedia; used in buildDisplay
+		that=this;
 
-	//sets shared media var to array of image/metadata objects
-	this.getMedia=function(){
-		media=data.jsonArr({
-				uri:'feed/slideshow.json',
-				lib:jQuery,
-				cbk:this.loadMedia
-			});
+	//PUBSUB============================================================================================================
+
+	this.pubSub=function(){
+
+		//namespace subscibes its listeners to... <------------------------------------------------------------listeners
+		//thumbLoad
+		this.subscribe(this.sizeThumb,'thumbLoad');
+		//thumbSize
+		this.subscribe(this.showThumb,'thumbSize');
+		//thumbFirst (if this is the first thumb inserted)
+		this.subscribe(this.showFull,'thumbFirst');
 	};
 
-	//callback for image/metadata receipt
-	this.loadMedia=function(){
+	//METHODS===========================================================================================================
 
-		var that=this;
+	this.parseMedia=function(){
 
-		//load thumbnail
-		//then pass to callback
-		$(media).each(function(){
+		var objArr=arguments[0];
 
-			var $thumb=$(document.createElement('img'))
-					.attr('src',this.thumbnail)
-					.bind('load',function(){
-						$thumb.appendTo($('#thumbs')); //insert into DOM to grab dimensions
-						that.sizeMedia($thumb);
-					}),
-				$full=$(document.createElement('img'))
-					.attr('src',this.url);
+		$(objArr).each(function(){
 
-			//attach data to DOM elements
-			$.data($thumb[0],'full',$full); //link thumbs and fulls
+			var $thumb=$(document.createElement('img')),
+				$full=$(document.createElement('img'));
+
+			//img data
 			$.data($full[0],'meta',{title:this.title,desc:this.desc}); //link fulls and captions
+			$.data($thumb[0],'full',$full[0]); //associate thumb with full
+
+			//img src + load
+			$full
+				.attr('src',this.url)
+				.bind('load',function(){
+					$(this).attr('data-loaded','true');
+				});
+			$thumb
+				.attr('src',this.thumbnail)
+				.bind('load',function(){
+					that.publish($thumb,'thumbLoad'); //---------------------------------------------------------------->
+				});
 		})
-	}.bind(this); //since executed from the data context
+	};
 
-	this.sizeMedia=function($thumb){
+	this.sizeThumb=function(){
+		arguments[0].appendTo($('#thumbs')); //insert into DOM to grab dimensions
 
-		var dimensions={w:$thumb.width(),h:$thumb.height()},
+		var $thumb=arguments[0],
+			dimensions={w:$thumb.width(),h:$thumb.height()},
 			longSide=dimensions.w>dimensions.h?dimensions.w:dimensions.h,
 			multiplier=60/longSide;
 
 		$thumb.attr('width',multiplier*dimensions.w);
 		$thumb.attr('height',multiplier*dimensions.h);
-		this.showMedia($thumb);
-	};
+		this.publish($thumb,'thumbSize'); //--------------------------------------------------------------------------->
+	}.bind(this);
 
-	this.showMedia=function($thumb){
+	this.showThumb=function(){
 
-		var $container=$(document.createElement('span'));//style definitions applied in css
+		var $container=$(document.createElement('span')),//style definitions applied in css
+			$thumb=arguments[0];
 
+		//center
 		$thumb.css({
 			left:-($thumb.width()-60)/2+'px',
 			top:-($thumb.height()-60)/2+'px'
 		});
+
+		//insert
 		$container
 			.appendTo($('#thumbs > div:eq(0)'))
 			.html($thumb);
+
+		//if this is the first thumb we're inserting
+		if($('#thumbs > div:eq(0) span').length===1){
+			this.publish($thumb,'thumbFirst') //----------------------------------------------------------------------->
+		}
+	}.bind(this);
+
+	this.showFull=function(){
+
+		var $thumb=arguments[0],
+			full=$.data($thumb[0],'full'),
+			int;
+
+		//don't show until full image is down
+		int=setInterval(function(){
+			if($(full).attr('data-loaded')){
+				$('#image figcaption').before(full);
+				clearInterval(int);
+			}
+		},50)
 	};
 };
