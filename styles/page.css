@@ -1,0 +1,26 @@
+.thumbs div{
+	width:1300px;
+}
+.thumbs img{
+	visibility:hidden;
+}
+.thumbs span img{
+	visibility:visible;
+	position:absolute;
+}
+.thumbs span{
+	display:block;
+	position:relative;
+	float:left;
+	width:60px;
+	height:60px;
+	overflow:hidden;
+	border:5px solid transparent;
+	margin:0 3px 0 0;
+}
+
+/*pure classes*/
+.thumbs{
+	width:100%;
+	overflow:auto;
+}
