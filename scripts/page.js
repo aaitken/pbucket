@@ -9,6 +9,7 @@ PBT.page.setup=function(){
 
 	var	$=arguments[0], //jQuery
 		//aliases
+		slideshow=PBT.slideshow,
 		that=this;
 
 	//PUBSUB============================================================================================================
@@ -23,6 +24,8 @@ PBT.page.setup=function(){
 		//thumbFirst (if this is the first thumb inserted)
 		this.subscribe(this.showFull,'thumbFirst');
 		this.subscribe(this.layout,'thumbFirst');
+		//fullShow
+		this.subscribe(slideshow.init,'fullShow');
 	};
 
 	//METHODS===========================================================================================================
@@ -138,6 +141,8 @@ PBT.page.setup=function(){
 				$figure.fadeIn(250,function(){
 					$('#thumbs li:eq(0)').addClass('active');
 				});
+
+				that.publish(null,'fullShow') //----------------------------------------------------------------------->
 
 			}
 		},50)
