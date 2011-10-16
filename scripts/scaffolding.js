@@ -52,17 +52,20 @@
 					visitSubscribers:function(action,arg,type){//communicate the published event to subscribers - arg is parameter of client function for 'publish,' client function itself for 'unsubscribe'
 
 						var pubtype=type||'any',
-							subscribers=this.subscribers[pubtype],
+							subscribers=this.subscribers[pubtype]||null,
 							i,
-							max=subscribers.length;
+							max;
 
-						for(i=0;i<max;i++){
-							if(action==='publish'){
-								subscribers[i](arg);//fire that bad boy with its argument
-							}
-							else{//action==='unsubscribe'
-								if(subscribers[i]===arg){
-									subscribers.splice(i,1);//remove from subscribers array
+						if(subscribers){
+							max=subscribers.length;
+							for(i=0;i<max;i++){
+								if(action==='publish'){
+									subscribers[i](arg);//fire that bad boy with its argument
+								}
+								else{//action==='unsubscribe'
+									if(subscribers[i]===arg){
+										subscribers.splice(i,1);//remove from subscribers array
+									}
 								}
 							}
 						}
