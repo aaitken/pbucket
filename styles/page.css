@@ -48,6 +48,9 @@ figure{
 	visibility:visible;
 	position:absolute;
 }
+.thumbs li img.initialized{
+	cursor:pointer;
+}
 .controls span{
 	padding-right:12px;
 }

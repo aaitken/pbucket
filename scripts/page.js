@@ -22,7 +22,7 @@ PBT.page.setup=function(){
 		//thumbSize
 		this.subscribe(this.showThumb,'thumbSize');
 		//thumbFirst (if this is the first thumb inserted)
-		this.subscribe(this.showFull,'thumbFirst');
+		this.subscribe(slideshow.showFull,'thumbFirst');
 		this.subscribe(this.layout,'thumbFirst');
 		//fullShow
 		this.subscribe(slideshow.init,'fullShow');
@@ -111,47 +111,15 @@ PBT.page.setup=function(){
 
 		//if this is the first thumb we're inserting
 		if($('#thumbs li').length===1){
-			this.publish($thumb,'thumbFirst') //----------------------------------------------------------------------->
+			var args=[$thumb[0],'slideshow init flag'];
+			this.publish(args,'thumbFirst') //----------------------------------------------------------------------->
 		}
 	}.bind(this);
-
-	this.showFull=function(){
-
-		var full=$.data(arguments[0][0],'full'),
-			int;
-
-		//don't show until full image is down
-		int=setInterval(function(){
-			if($(full).attr('data-loaded')){
-
-				var imgLeft,
-					capLeft,
-					$figure=$('#image figure:eq(0)'),
-					$figcaption=$('#image figcaption:eq(0)');
-
-				clearInterval(int);
-				$figcaption.before(full); //insert full img...
-				$('#image h1:eq(0)').html($.data(full,'meta').title); //and its title...
-				$('#image p:eq(0)').html($.data(full,'meta').desc); //and description
-				capLeft=$figcaption.offset().left;
-				imgLeft=$('#image img:eq(0)')[0].offsetLeft;
-				$figcaption.css('padding-left',imgLeft-capLeft+'px'); //align caption info to photo
-				$figure.fadeOut(0); 
-				$figure.css('visibility','visible');
-				$figure.fadeIn(250,function(){
-					$('#thumbs li:eq(0)').addClass('active');
-				});
-
-				that.publish(null,'fullShow') //----------------------------------------------------------------------->
-
-			}
-		},50)
-	};
 
 	//positioning of control buttons relative to thumbs
 	this.layout=function(){
 
-		var left=arguments[0].offset().left;
+		var left=$(arguments[0][0]).offset().left;
 
 		$('#controls').css('padding-left',left+'px');
 		$('body').css('visibility','visible');
