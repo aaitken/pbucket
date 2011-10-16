@@ -1,5 +1,25 @@
 body{
 	text-align:center;
+	padding-top:20px;
+	font-family:sans-serif;
+	visibility:hidden;
+}
+button{
+	background: none;
+	border: none;
+}
+.controls span button{
+	background:#ccc;
+	border-radius:3px;
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+	padding:1px 5px 3px 5px;
+}
+.controls span + span button{
+	background: none;
+	padding:1px 0 3px 0;
+	margin-left:0;
+	margin-right:4px;
 }
 .image div{
 	width:815px;
@@ -10,13 +30,20 @@ body{
 	margin:0 auto;
 	width:1170px;
 }
+figcaption{
+	padding-top:10px;
+	height:32px;
 
+}
 .thumbs img{
 	visibility:hidden;
 }
 .thumbs span img{
 	visibility:visible;
 	position:absolute;
+}
+.controls span{
+	padding-right:12px;
 }
 .thumbs span{
 	display:block;
@@ -29,14 +56,19 @@ body{
 	margin:0 3px 0 0;
 }
 
-/*pure classes*/
+/*pure classes-------------------------------------------------------*/
 .controls{
 	text-align:left;
+	margin-top:50px;
+	margin-bottom:20px;
 }
 .image{
+	visibility:hidden;
 	display:inline-block;
 	margin:0 auto;
 	text-align:left;
+	zoom:1;
+	*display:inline;
 }
 .thumbs{
 	width:100%;
