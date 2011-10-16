@@ -47,6 +47,7 @@ figure{
 .thumbs li img{
 	visibility:visible;
 	position:absolute;
+	cursor:pointer;
 }
 .thumbs li img.initialized{
 	cursor:pointer;
