@@ -22,30 +22,37 @@ button{
 	margin-right:4px;
 }
 .image div{
-	width:815px;
-	height:594px;
+	width:815px; /*biggest of set*/
+	height:636px; /*594 = biggest of set; this adds caption*/
 	text-align:center;
 }
-.thumbs div{
+.thumbs ul{
 	margin:0 auto;
 	width:1170px;
 }
 figcaption{
 	padding-top:10px;
 	height:32px;
-
+	text-align:left;
 }
-.thumbs img{
+figure{
+	visibility:hidden;
+	display:inline-block;
+	margin:0 auto;
+	zoom:1;
+	*display:inline;
+}
+.thumbs img{ /*context into which thumbs are first loaded for sizing*/
 	visibility:hidden;
 }
-.thumbs span img{
+.thumbs li img{
 	visibility:visible;
 	position:absolute;
 }
 .controls span{
 	padding-right:12px;
 }
-.thumbs span{
+.thumbs li{
 	display:block;
 	position:relative;
 	float:left;
@@ -55,7 +62,9 @@ figcaption{
 	border:5px solid transparent;
 	margin:0 3px 0 0;
 }
-
+.thumbs li.active{
+	border:5px solid #000;
+}
 /*pure classes-------------------------------------------------------*/
 .controls{
 	text-align:left;
@@ -63,12 +72,9 @@ figcaption{
 	margin-bottom:20px;
 }
 .image{
-	visibility:hidden;
-	display:inline-block;
-	margin:0 auto;
-	text-align:left;
-	zoom:1;
-	*display:inline;
+	display:block;
+	height:636px;
+	text-align:center;
 }
 .thumbs{
 	width:100%;

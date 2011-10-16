@@ -92,7 +92,7 @@ PBT.page.setup=function(){
 
 	this.showThumb=function(){
 
-		var $container=$(document.createElement('span')),//style definitions applied in css
+		var $container=$(document.createElement('li')),//style definitions applied in css
 			$thumb=arguments[0];
 
 		//center
@@ -103,11 +103,11 @@ PBT.page.setup=function(){
 
 		//insert
 		$container
-			.appendTo($('#thumbs > div:eq(0)'))
+			.appendTo($('#thumbs ul'))
 			.html($thumb);
 
 		//if this is the first thumb we're inserting
-		if($('#thumbs > div:eq(0) span').length===1){
+		if($('#thumbs li').length===1){
 			this.publish($thumb,'thumbFirst') //----------------------------------------------------------------------->
 		}
 	}.bind(this);
@@ -122,21 +122,22 @@ PBT.page.setup=function(){
 			if($(full).attr('data-loaded')){
 
 				var imgLeft,
-					capLeft;
+					capLeft,
+					$figure=$('#image figure:eq(0)'),
+					$figcaption=$('#image figcaption:eq(0)');
 
-				clearInterval(int);debugger;
-				$('#image div:eq(0)').html(full);
-				$('#image h1:eq(0)').html($.data(full,'meta').title);
-				$('#image p:eq(0)').html($.data(full,'meta').desc);
-
-				capLeft=$('#image figcaption:eq(0)').offset().left;
+				clearInterval(int);
+				$figcaption.before(full); //insert full img...
+				$('#image h1:eq(0)').html($.data(full,'meta').title); //and its title...
+				$('#image p:eq(0)').html($.data(full,'meta').desc); //and description
+				capLeft=$figcaption.offset().left;
 				imgLeft=$('#image img:eq(0)')[0].offsetLeft;
-
-				$('#image figcaption:eq(0)').css('padding-left',imgLeft-capLeft+'px');
-
-				$('#image').fadeOut(0);
-				$('#image').css('visibility','visible');
-				$('#image').fadeIn(250);
+				$figcaption.css('padding-left',imgLeft-capLeft+'px'); //align caption info to photo
+				$figure.fadeOut(0); 
+				$figure.css('visibility','visible');
+				$figure.fadeIn(250,function(){
+					$('#thumbs li:eq(0)').addClass('active');
+				});
 
 			}
 		},50)
@@ -150,7 +151,7 @@ PBT.page.setup=function(){
 		$('body').css('visibility','visible');
 		$('#controls').css('padding-left',left+'px');
 		$(window).one('resize',function(){
-			that.layout($('.thumbs span:eq(0)'));
+			that.layout($('.thumbs li:eq(0)'));
 		});
 	};
 };
