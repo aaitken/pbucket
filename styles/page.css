@@ -1,6 +1,16 @@
-.thumbs div{
-	width:1300px;
+body{
+	text-align:center;
 }
+.image div{
+	width:815px;
+	height:594px;
+	text-align:center;
+}
+.thumbs div{
+	margin:0 auto;
+	width:1170px;
+}
+
 .thumbs img{
 	visibility:hidden;
 }
@@ -20,7 +30,16 @@
 }
 
 /*pure classes*/
+.controls{
+	text-align:left;
+}
+.image{
+	display:inline-block;
+	margin:0 auto;
+	text-align:left;
+}
 .thumbs{
 	width:100%;
+	text-align:center;
 	overflow:auto;
 }

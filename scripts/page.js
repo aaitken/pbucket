@@ -48,7 +48,7 @@ PBT.page.setup=function(){
 			$thumb
 				.attr('src',this.thumbnail)
 				.bind('load',function(){
-					that.publish($thumb,'thumbLoad'); //---------------------------------------------------------------->
+					that.publish($thumb,'thumbLoad'); //--------------------------------------------------------------->
 				});
 		})
 	};
@@ -84,20 +84,19 @@ PBT.page.setup=function(){
 
 		//if this is the first thumb we're inserting
 		if($('#thumbs > div:eq(0) span').length===1){
-			this.publish($thumb,'thumbFirst') //----------------------------------------------------------------------->
+			this.publish($.data($thumb[0],'full'),'thumbFirst') //----------------------------------------------------->
 		}
 	}.bind(this);
 
 	this.showFull=function(){
 
-		var $thumb=arguments[0],
-			full=$.data($thumb[0],'full'),
+		var full=arguments[0],
 			int;
 
 		//don't show until full image is down
 		int=setInterval(function(){
 			if($(full).attr('data-loaded')){
-				$('#image figcaption').before(full);
+				$('#image div').html(full);
 				clearInterval(int);
 			}
 		},50)
