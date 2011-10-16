@@ -38,11 +38,16 @@ PBT.slideshow.setup=function(){
 		int=setInterval(function(){
 			if($(full).attr('data-loaded')){
 				clearInterval(int);
+				$('body').append(full); //for picking up dimensions
 
 				var imgLeft,
 					capLeft,
+					w=$(full).width(),
+					h=$(full).height(),
 					$figure=$('#image figure:eq(0)'),
 					$figcaption=$('#image figcaption:eq(0)');
+
+				$(full).css('margin-top',((642-h)/2)+'px');
 
 				//insert full img...
 				$figcaption.prev().detach(); //save for re-insertion
@@ -55,17 +60,13 @@ PBT.slideshow.setup=function(){
 				$figcaption.css('padding-left',imgLeft-capLeft+'px'); //align caption info to photo
 				$figure.fadeOut(0);
 				$figure.css('visibility','visible');
-				$figure.fadeIn(250/*,function(*/);//{
-					$('#thumbs li').removeClass('active');
-					$(thumb).parent().addClass('active');
-				//});
+				$figure.fadeIn(250);
+				$('#thumbs li').removeClass('active');
+				$(thumb).parent().addClass('active');
 
 				if(args[1]){ //call from page NS overloaded to indicate first load
 					that.publish(null,'firstShow') //------------------------------------------------------------------>
 				}
-
-				//that.publish(null,'fullShow') //----------------------------------------------------------------------->
-
 			}
 		},50)
 

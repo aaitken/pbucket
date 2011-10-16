@@ -3,6 +3,7 @@ body{
 	padding-top:20px;
 	font-family:sans-serif;
 	visibility:hidden;
+	overflow: hidden;
 }
 button{
 	background: none;
@@ -25,10 +26,6 @@ button{
 	width:815px; /*biggest of set*/
 	text-align:center;
 }
-.thumbs ul{
-	margin:0 auto;
-	width:1170px;
-}
 figcaption{
 	padding-top:10px;
 	text-align:left;
@@ -41,13 +38,18 @@ figure{
 	zoom:1;
 	*display:inline;
 }
+body > img{
+	position:absolute;
+	top:0;
+	left:0;
+	visibility:hidden;
+}
 .thumbs img{ /*context into which thumbs are first loaded for sizing*/
 	visibility:hidden;
 }
 .thumbs li img{
 	visibility:visible;
 	position:absolute;
-	cursor:pointer;
 }
 .thumbs li img.initialized{
 	cursor:pointer;
@@ -68,6 +70,10 @@ figure{
 .thumbs li.active{
 	border:5px solid #000;
 }
+.thumbs ul{
+	margin:0 auto;
+	width:1170px;
+}
 /*pure classes-------------------------------------------------------*/
 .controls{
 	text-align:left;
@@ -76,7 +82,7 @@ figure{
 }
 .image{
 	display:block;
-	height:636px;
+	height:642px;
 	text-align:center;
 }
 .thumbs{
