@@ -77,8 +77,8 @@ body > img{
 /*pure classes-------------------------------------------------------*/
 .controls{
 	text-align:left;
-	margin-top:50px;
-	margin-bottom:20px;
+	padding-top:50px;
+	padding-bottom:20px;
 }
 .image{
 	display:block;

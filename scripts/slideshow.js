@@ -25,6 +25,33 @@ PBT.slideshow.setup=function(){
 
 	//METHODS===========================================================================================================
 
+	this.calculateFull=function(){
+
+		var thumb=arguments[0],
+			full=$.data(thumb,'full'),
+			int; //polling interval to detect full image load
+
+		int=setInterval(function(){
+			if($(full).attr('data-loaded')){
+				clearInterval(int);
+				$('body').append(full); //for picking up dimensions
+
+				var imgW=$(full).width(),
+					imgH=$(full).height(),
+					cntW=$('#image').width(),
+					cntH=$('#image').width(),
+					winW=$(window).width(),
+					winH=$(window).height(),
+					bodW=$(window).width(),
+					bodH=$(window).height(),
+					ctrlsAndThumbsH=$('#controls').outerHeight()+$('#thumbs').outerHeight()+20;
+
+
+
+			}
+		},50);
+	};
+
 	this.showFull=function(){ //takes a single array param for overloading
 
 		var args=arguments[0],

@@ -10,7 +10,8 @@ PBT.page.setup=function(){
 	var	$=arguments[0], //jQuery
 		//aliases
 		slideshow=PBT.slideshow,
-		that=this;
+		that=this,
+		resizeTo; //initially dev only
 
 	//PUBSUB============================================================================================================
 
@@ -20,12 +21,12 @@ PBT.page.setup=function(){
 		//thumbLoad
 		this.subscribe(this.sizeThumb,'thumbLoad');
 		//thumbSize
-		this.subscribe(this.showThumb,'thumbSize');
+		this.subscribe(this.displayThumb,'thumbSize');
 		//thumbFirst (if this is the first thumb inserted)
-		this.subscribe(slideshow.showFull,'thumbFirst');
+		this.subscribe(slideshow.calculateFull,'thumbFirst');
 		this.subscribe(this.layout,'thumbFirst');
-		//fullShow
-		this.subscribe(slideshow.init,'fullShow');
+		//resize
+		this.subscribe(this.layout,'resize');
 	};
 
 	//METHODS===========================================================================================================
@@ -93,7 +94,7 @@ PBT.page.setup=function(){
 		this.publish($thumb,'thumbSize'); //--------------------------------------------------------------------------->
 	}.bind(this);
 
-	this.showThumb=function(){
+	this.displayThumb=function(){
 
 		var $container=$(document.createElement('li')),//style definitions applied in css
 			$thumb=arguments[0];
@@ -111,20 +112,34 @@ PBT.page.setup=function(){
 
 		//if this is the first thumb we're inserting
 		if($('#thumbs li').length===1){
-			var args=[$thumb[0],'slideshow init flag'];
-			this.publish(args,'thumbFirst') //----------------------------------------------------------------------->
+			this.publish($thumb[0],'thumbFirst') //-------------------------------------------------------------------->
 		}
 	}.bind(this);
 
 	//positioning of control buttons relative to thumbs
-	this.layout=function(){
+	this.layout=function(){ //$thumb
 
-		var left=$(arguments[0][0]).offset().left;
+		var left=$(arguments[0]).offset().left,
+			winW=$('html').width(),
+			winH=document.documentElement.clientHeight, //visible window
+			docW=$('html').width(),
+			docH=PBT.utils.getDocHeight(); //document
 
+		//align controls to first thumb
 		$('#controls').css('padding-left',left+'px');
 		$('body').css('visibility','visible');
-		$(window).one('resize',function(){
-			that.layout($('.thumbs li:eq(0)'));
-		});
+
+		//size full image containment area
+		if(winH<docH){
+			$('#image').css('height',$('#image').height()-(docH-winH));
+		};
+
 	};
+
+	$(window).bind('resize',function(){
+		clearTimeout(resizeTo);
+		resizeTo=setTimeout(function(){
+			that.publish($('#thumbs img:eq(0)')[0],'resize'); //------------------------------------------------------->
+		},100);
+	});
 };
