@@ -148,8 +148,8 @@ PBT.page.setup=function(){
 
 		var left=arguments[0].offset().left;
 
-		$('body').css('visibility','visible');
 		$('#controls').css('padding-left',left+'px');
+		$('body').css('visibility','visible');
 		$(window).one('resize',function(){
 			that.layout($('.thumbs li:eq(0)'));
 		});
