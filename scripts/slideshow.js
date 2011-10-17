@@ -111,7 +111,7 @@ PBT.slideshow.setup=function(){
 
 		//delegated thumb clicks
 		$('#thumbs').bind('click',function(e){
-			if(e.target.src){ //could be the li for scaled-down images
+			if(e.target.src&&$(e.target).parent().is(':not(.active)')){ //could be the li for scaled-down images
 				that.publish(e.target,'thumbClick');
 			}
 		});

@@ -10,8 +10,7 @@ PBT.page.setup=function(){
 	var	$=arguments[0], //jQuery
 		//aliases
 		slideshow=PBT.slideshow,
-		that=this,
-		resizeTo; //initially dev only
+		that=this;
 
 	//PUBSUB============================================================================================================
 
@@ -118,28 +117,26 @@ PBT.page.setup=function(){
 
 	//positioning of control buttons relative to thumbs
 	this.layout=function(){ //$thumb
+		$('#image, #image img').css({
+			height:'',
+			width:''
+		}); //reset
 
-		var left=$(arguments[0]).offset().left;
-			/*winW=$('html').width(),
-			winH=document.documentElement.clientHeight, //visible window
-			docW=$('html').width(),
-			docH=PBT.utils.getDocHeight(); //document*/
+		var winH=$('body')[0].clientHeight,
+			docH=$('body')[0].scrollHeight,
+			$image=$('#image'),
+			$img=$image.find('img:eq(0)'),
+			$imgH=$img.height(),
+			$imgW=$img.width();
 
-		//align controls to first thumb
-		$('#controls').css('padding-left',left+'px');
-		$('body').css('visibility','visible');
-
-		//size full image containment area
-		/*if(winH<docH){
-			$('#image').css('height',$('#image').height()-(docH-winH));
-		};*/
-
+		if(winH<docH){debugger;
+			$image.css('height',$image.height()-(docH-winH+20)+'px');
+			$img.css('height',$image.height()-42+'px'); //42 for the caption
+			$img.css('width',$imgW*($img.height()/$imgH)+'px');
+		}
 	};
 
 	$(window).bind('resize',function(){
-		clearTimeout(resizeTo);
-		resizeTo=setTimeout(function(){
-			that.publish($('#thumbs img:eq(0)')[0],'resize'); //------------------------------------------------------->
-		},100);
+		that.publish($('#thumbs img:eq(0)')[0],'resize'); //----------------------------------------------------------->
 	});
 };
