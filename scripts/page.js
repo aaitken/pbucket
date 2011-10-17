@@ -22,8 +22,7 @@ PBT.page.setup=function(){
 		//thumbSize
 		this.subscribe(this.displayThumb,'thumbSize');
 		//thumbFirst (if this is the first thumb inserted)
-		this.subscribe(slideshow.calculateFull,'thumbFirst');
-		this.subscribe(this.layout,'thumbFirst');
+		this.subscribe(slideshow.showFull,'thumbFirst');
 		//resize
 		this.subscribe(this.layout,'resize');
 	};
@@ -117,23 +116,38 @@ PBT.page.setup=function(){
 
 	//positioning of control buttons relative to thumbs
 	this.layout=function(){ //$thumb
+		//reset
 		$('#image, #image img').css({
 			height:'',
 			width:''
-		}); //reset
+		});
 
 		var winH=$('body')[0].clientHeight,
 			docH=$('body')[0].scrollHeight,
 			$image=$('#image'),
 			$img=$image.find('img:eq(0)'),
 			$imgH=$img.height(),
-			$imgW=$img.width();
+			$imgW=$img.width(),
+			resizeImg=function(){
+				$img.css('height',$image.height()-42+'px'); //42 for the caption
+				$img.css('width',$imgW*($img.height()/$imgH)+'px');
+			};
 
-		if(winH<docH){debugger;
+		//test doc against window
+		if(winH<docH){
 			$image.css('height',$image.height()-(docH-winH+20)+'px');
-			$img.css('height',$image.height()-42+'px'); //42 for the caption
-			$img.css('width',$imgW*($img.height()/$imgH)+'px');
+			if($imgH>$image.height()){
+				resizeImg();
+			}
 		}
+
+		//test image against container
+		if($imgH>$image.height()){
+			resizeImg();
+		}
+
+		//align caption info to photo
+		$('figcaption').css('width',$img.width());
 	};
 
 	$(window).bind('resize',function(){
