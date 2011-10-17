@@ -117,33 +117,24 @@ PBT.page.setup=function(){
 	//positioning of control buttons relative to thumbs
 	this.layout=function(){ //$thumb
 		//reset
-		$('#image, #image img').css({
-			height:'',
-			width:''
-		});
+		$('#image, #image img').removeAttr('style');
 
 		var winH=$('body')[0].clientHeight,
 			docH=$('body')[0].scrollHeight,
 			$image=$('#image'),
 			$img=$image.find('img:eq(0)'),
-			$imgH=$img.height(),
 			$imgW=$img.width(),
-			resizeImg=function(){
-				$img.css('height',$image.height()-42+'px'); //42 for the caption
-				$img.css('width',$imgW*($img.height()/$imgH)+'px');
-			};
+			$imgH=$img.height();
 
 		//test doc against window
 		if(winH<docH){
 			$image.css('height',$image.height()-(docH-winH+20)+'px');
-			if($imgH>$image.height()){
-				resizeImg();
-			}
 		}
 
 		//test image against container
-		if($imgH>$image.height()){
-			resizeImg();
+		if($imgH+42>$image.height()){
+			$img.css('height',$image.height()-42+'px'); //42 for the caption
+			$img.css('width',$imgW*($img.height()/$imgH)+'px');
 		}
 
 		//align caption info to photo

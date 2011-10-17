@@ -48,12 +48,6 @@ figure{
 html{
 	height:100%;
 }
-body > img{
-	position:absolute;
-	top:0;
-	left:0;
-	visibility:hidden;
-}
 .thumbs img{ /*context into which thumbs are first loaded for sizing*/
 	visibility:hidden;
 }
