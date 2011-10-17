@@ -119,20 +119,20 @@ PBT.page.setup=function(){
 	//positioning of control buttons relative to thumbs
 	this.layout=function(){ //$thumb
 
-		var left=$(arguments[0]).offset().left,
-			winW=$('html').width(),
+		var left=$(arguments[0]).offset().left;
+			/*winW=$('html').width(),
 			winH=document.documentElement.clientHeight, //visible window
 			docW=$('html').width(),
-			docH=PBT.utils.getDocHeight(); //document
+			docH=PBT.utils.getDocHeight(); //document*/
 
 		//align controls to first thumb
 		$('#controls').css('padding-left',left+'px');
 		$('body').css('visibility','visible');
 
 		//size full image containment area
-		if(winH<docH){
+		/*if(winH<docH){
 			$('#image').css('height',$('#image').height()-(docH-winH));
-		};
+		};*/
 
 	};
 

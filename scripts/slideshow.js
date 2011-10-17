@@ -21,6 +21,8 @@ PBT.slideshow.setup=function(){
 		this.subscribe(this.showFull,'thumbClick');
 		//firstShow
 		this.subscribe(this.init,'firstShow');
+		//fullCalculate
+		this.subscribe(this.showFull,'fullCalculate');
 	};
 
 	//METHODS===========================================================================================================
@@ -46,19 +48,18 @@ PBT.slideshow.setup=function(){
 					bodH=$(window).height(),
 					ctrlsAndThumbsH=$('#controls').outerHeight()+$('#thumbs').outerHeight()+20;
 
-
-
+				that.publish(thumb,'fullCalculate'); //---------------------------------------------------------------->
 			}
 		},50);
 	};
 
 	this.showFull=function(){ //takes a single array param for overloading
 
-		var args=arguments[0],
-			thumb=args[0],
+		var thumb=arguments[0],
 			full=$.data(thumb,'full'),
 			title=$.data(full,'meta').title,
 			desc=$.data(full,'meta').desc,
+			firstShow=false,
 			int;
 
 		//don't show until full image is down
@@ -69,14 +70,11 @@ PBT.slideshow.setup=function(){
 
 				var imgLeft,
 					capLeft,
-					w=$(full).width(),
-					h=$(full).height(),
 					$figure=$('#image figure:eq(0)'),
 					$figcaption=$('#image figcaption:eq(0)');
 
-				$(full).css('margin-top',((642-h)/2)+'px');
-
 				//insert full img...
+				if($figcaption.prev().length===0){firstShow=true};
 				$figcaption.prev().detach(); //save for re-insertion
 				$figcaption.before(full);
 
@@ -91,7 +89,7 @@ PBT.slideshow.setup=function(){
 				$('#thumbs li').removeClass('active');
 				$(thumb).parent().addClass('active');
 
-				if(args[1]){ //call from page NS overloaded to indicate first load
+				if(firstShow){
 					that.publish(null,'firstShow') //------------------------------------------------------------------>
 				}
 			}
@@ -114,7 +112,7 @@ PBT.slideshow.setup=function(){
 		//delegated thumb clicks
 		$('#thumbs').bind('click',function(e){
 			if(e.target.src){ //could be the li for scaled-down images
-				that.publish([e.target],'thumbClick');
+				that.publish(e.target,'thumbClick');
 			}
 		});
 
