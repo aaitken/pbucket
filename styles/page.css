@@ -5,8 +5,16 @@ body{
 	overflow:hidden;
 }
 button{
-	background: none;
-	border: none;
+	background:none;
+	border:none;
+	cursor:pointer;
+}
+.disabled button,
+.controls span + span.disabled,
+.disabled,
+button:active{
+	color:#888;
+	cursor:default;
 }
 .controls span button{
 	background:#ccc;
@@ -14,6 +22,9 @@ button{
 	-moz-border-radius:3px;
 	-webkit-border-radius:3px;
 	padding:1px 5px 3px 5px;
+}
+.controls span + span{
+	color:#7D9EC0;
 }
 .controls span + span button{
 	background: none;

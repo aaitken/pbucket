@@ -11,6 +11,7 @@ PBT.slideshow.setup=function(){
 		//Aliases
 		page=PBT.page,
 		i=0, //show counter, used by init
+		playInterval, //shared between play and pause controls
 		that=this; //re-usable reference for inner function convention
 
 	//PUBSUB============================================================================================================
@@ -25,6 +26,11 @@ PBT.slideshow.setup=function(){
 		this.subscribe(page.layout,'fullShow');
 		//fullCalculate
 		this.subscribe(this.showFull,'fullCalculate');
+		//main buttons
+		this.subscribe(this.playShow,'btnPlay');
+		this.subscribe(this.pauseShow,'btnPause');
+		this.subscribe(this.goNext,'btnNext');
+
 	};
 
 	//METHODS===========================================================================================================
@@ -69,6 +75,22 @@ PBT.slideshow.setup=function(){
 		},50)
 	},
 
+	this.pauseShow=function(){
+		clearInterval(playInterval);
+	};
+	this.playShow=function(){
+		//playInterval available one up in scope chain for sharing
+		playInterval=setInterval(function(){
+			var $activeLi=$('li.active:eq(0)');
+			if($activeLi.next().length>0){
+				that.publish($activeLi.next().find('img')[0],'thumbClick'); //----------------------------------------->
+			}
+		},3000)
+	};
+	this.goNext=function(){
+		that.publish($('li.active').next().find('img')[0],'thumbClick'); //-------------------------------------------->
+	};
+
 	this.init=function(){
 
 		//run init on first fullShow only
@@ -80,9 +102,51 @@ PBT.slideshow.setup=function(){
 		//delegated thumb clicks
 		$('#thumbs').bind('click',function(e){
 			if(e.target.src&&$(e.target).parent().is(':not(.active)')){ //could be the li for scaled-down images
-				that.publish(e.target,'thumbClick');
+
+				//kinda ugle here...
+				clearInterval(playInterval);
+				$('#controls span').addClass('disabled');
+				$('#controls span:eq(0)').removeClass('disabled').find('button').removeClass('disabled');
+				$('#controls span:eq(0) button:eq(0)').addClass('disabled');
+
+				that.publish(e.target,'thumbClick'); //---------------------------------------------------------------->
 			}
 		});
+
+		//delegated main button clicks
+		$('#controls span:eq(0)').bind('click',function(e){
+			if(e.target.type==='button'){
+
+				var $targ=$(e.target),
+					event=null,
+					toggleClasses=function(){
+						$targ.parent().find('button').removeClass('disabled');
+						$targ.addClass('disabled');
+					};
+
+				if($targ.hasClass('disabled')){return false;}
+				switch(e.target.id){
+					case 'btnPause':
+						toggleClasses();
+						event='btnPause';
+						break;
+					case 'btnPlay':
+						toggleClasses();
+						event='btnPlay';
+						break;
+					case 'btnNext':
+						event='btnNext';
+						break;
+					default:
+						break;
+				}
+
+				that.publish(e.target,event); //----------------------------------------------------------------------->
+			}
+		});
+
+		//start slideshow
+		$('#btnPlay').trigger('click');
 
 	};
 }
