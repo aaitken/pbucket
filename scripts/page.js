@@ -115,22 +115,16 @@ PBT.page.setup=function(){
 	}.bind(this);
 
 	//positioning of control buttons relative to thumbs
-	this.layout=function(){ //$thumb
+	this.layout=function(){
 		//reset
 		$('#image, #image img').removeAttr('style');
 
-		var winH=/*$('body')[0].clientHeight*/document.documentElement.clientHeight,
-			docH=$('body')[0].scrollHeight,
-			$image,
-			$img,
-			$imgW,
-			$imgH;
-
-		if(arguments.length>0){$('figcaption:eq(0)').before(arguments[0]);}
-		$image=$('#image');
-		$img=$image.find('img:eq(0)');
-		$imgW=$img.width();
-		$imgH=$img.height();
+		var winH=$('body')[0].clientHeight,
+			docH=$('html')[0].scrollHeight,
+			$image=$('#image'),
+			$img=$image.find('img:eq(0)'),
+			$imgW=$img.width(),
+			$imgH=$img.height();
 
 		//test doc against window
 		if(winH<docH){
@@ -148,6 +142,6 @@ PBT.page.setup=function(){
 	};
 
 	$(window).bind('resize',function(){
-		that.publish('resize'); //------------------------------------------------------------------------------------->
+		that.publish(null,'resize'); //-------------------------------------------------------------------------------->
 	});
 };
