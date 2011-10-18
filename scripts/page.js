@@ -122,13 +122,15 @@ PBT.page.setup=function(){
 		var winH=$('body')[0].clientHeight,
 			docH=$('html')[0].scrollHeight,
 			$image=$('#image'),
+			bottomH=$image.find('+ div').height(),
 			$img=$image.find('img:eq(0)'),
 			$imgW=$img.width(),
 			$imgH=$img.height();
 
-		//test doc against window
+		//test doc against window (and enforce 400 minimum height)
 		if(winH<docH){
 			$image.css('height',$image.height()-(docH-winH+20)+'px');
+			if($image.height()+bottomH<400){$image.css('height',400-bottomH+'px');} //400 minimum height
 		}
 
 		//test image against container
