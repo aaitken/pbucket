@@ -11,6 +11,7 @@ PBT.slideshow.setup=function(){
 		//Aliases
 		page=PBT.page,
 		i=0, //show counter, used by init
+		speed=2500,
 		playInterval, //shared between play and pause controls
 		that=this; //re-usable reference for inner function convention
 
@@ -30,6 +31,8 @@ PBT.slideshow.setup=function(){
 		this.subscribe(this.playShow,'btnPlay');
 		this.subscribe(this.pauseShow,'btnPause');
 		this.subscribe(this.goNext,'btnNext');
+		//speed
+		this.subscribe(this.applySpeed,'speedChoice');
 
 	};
 
@@ -76,20 +79,35 @@ PBT.slideshow.setup=function(){
 	},
 
 	this.pauseShow=function(){
+		$('#controls span:eq(1)').addClass('disabled');
 		clearInterval(playInterval);
 	};
+
 	this.playShow=function(){
 		//playInterval available one up in scope chain for sharing
+		$('#controls span:eq(1)').removeClass('disabled');
 		playInterval=setInterval(function(){
 			var $activeLi=$('li.active:eq(0)');
 			if($activeLi.next().length>0){
 				that.publish($activeLi.next().find('img')[0],'thumbClick'); //----------------------------------------->
 			}
-		},3000)
+			else{
+				$('#btnPlay').removeClass('disabled').prev().addClass('disabled');
+				that.pauseShow();
+			}
+		},speed)
 	};
+
 	this.goNext=function(){
 		that.publish($('li.active').next().find('img')[0],'thumbClick'); //-------------------------------------------->
 	};
+	
+	this.applySpeed=function(){
+		//speed available one up in scope chain for sharing
+		speed=arguments[0];
+		clearInterval(playInterval);
+		this.playShow();
+	}.bind(this);
 
 	this.init=function(){
 
@@ -142,6 +160,36 @@ PBT.slideshow.setup=function(){
 				}
 
 				that.publish(e.target,event); //----------------------------------------------------------------------->
+			}
+		});
+
+		//delegated speed button clicks
+		$('#controls span:eq(1)').bind('click',function(e){
+			if(e.target.type==='button'){
+
+				var $targ=$(e.target),
+					speed=null;
+
+				if($targ.hasClass('speed')||$targ.parent().hasClass('disabled')){return false;}
+
+				$targ.parent().find('button').removeClass('speed');
+				$targ.addClass('speed');
+
+				switch(e.target.id){
+					case 'btnSlow':
+						speed=4000;
+						break;
+					case 'btnMedium':
+						speed=2500;
+						break;
+					case 'btnFast':
+						speed=750;
+						break;
+					default:
+						break;
+				}
+
+				that.publish(speed,'speedChoice'); //------------------------------------------------------------------>
 			}
 		});
 
