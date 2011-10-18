@@ -115,12 +115,12 @@ PBT.page.setup=function(){
 	}.bind(this);
 
 	//positioning of control buttons relative to thumbs
-	this.layout=function(){ //$thumb
+	this.layout=function(){
 		//reset
 		$('#image, #image img').removeAttr('style');
 
 		var winH=$('body')[0].clientHeight,
-			docH=$('body')[0].scrollHeight,
+			docH=$('html')[0].scrollHeight,
 			$image=$('#image'),
 			$img=$image.find('img:eq(0)'),
 			$imgW=$img.width(),
@@ -142,6 +142,6 @@ PBT.page.setup=function(){
 	};
 
 	$(window).bind('resize',function(){
-		that.publish($('#thumbs img:eq(0)')[0],'resize'); //----------------------------------------------------------->
+		that.publish(null,'resize'); //-------------------------------------------------------------------------------->
 	});
 };

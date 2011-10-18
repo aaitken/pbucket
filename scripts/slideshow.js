@@ -49,6 +49,7 @@ PBT.slideshow.setup=function(){
 				i++;
 
 				//insert full img...
+				$('#image, #image img').removeAttr('style');
 				$figcaption.prev().detach(); //save for re-insertion
 				$figcaption.before(full);
 				$('#image h1:eq(0)').html(title); //and its title...
