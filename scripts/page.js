@@ -139,6 +139,9 @@ PBT.page.setup=function(){
 			$img.css('width',$imgW*($img.height()/$imgH)+'px');
 		}
 
+		//center vertically
+		$img.css({'margin-top':.5*($image.height()-($img.height()+42))+'px'})
+
 		//align caption info to photo
 		$('figcaption').css('width',$img.width());
 	};

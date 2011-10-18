@@ -40,6 +40,7 @@ figcaption{
 }
 figure{
 	visibility:hidden;
+	padding-top:15px;
 	display:inline-block;
 	margin:0 auto;
 	/*for IE7 (does nothing for IE8)*/
