@@ -50,7 +50,7 @@ PBT.slideshow.setup=function(){
 
 				//insert full img...
 				$figcaption.prev().detach(); //save for re-insertion
-				$figcaption.before(full);
+				//$figcaption.before(full);
 				$('#image h1:eq(0)').html(title); //and its title...
 				$('#image p:eq(0)').html(desc); //and description
 
@@ -63,7 +63,7 @@ PBT.slideshow.setup=function(){
 				$('#thumbs li').removeClass('active');
 				$(thumb).parent().addClass('active');
 
-				that.publish(null,'fullShow'); //---------------------------------------------------------------------->
+				that.publish(full,'fullShow'); //---------------------------------------------------------------------->
 			}
 		},50)
 	},
@@ -84,4 +84,4 @@ PBT.slideshow.setup=function(){
 		});
 
 	};
-};
+}
