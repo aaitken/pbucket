@@ -22,7 +22,7 @@ PBT.page.setup=function(){
 		//thumbSize
 		this.subscribe(this.displayThumb,'thumbSize');
 		//thumbFirst (if this is the first thumb inserted)
-		this.subscribe(slideshow.showFull,'thumbFirst');
+		this.subscribe(slideshow.displayFull,'thumbFirst');
 		//resize
 		this.subscribe(this.layout,'resize');
 	};

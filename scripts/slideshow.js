@@ -11,8 +11,6 @@ PBT.slideshow.setup=function(){
 		//Aliases
 		page=PBT.page,
 		i=0, //show counter, used by init
-		speed=2500,
-		playInterval, //shared between play and pause controls
 		that=this; //re-usable reference for inner function convention
 
 	//PUBSUB============================================================================================================
@@ -21,24 +19,21 @@ PBT.slideshow.setup=function(){
 
 		//namespace subscibes its listeners to... <------------------------------------------------------------listeners
 		//thumbClick
-		this.subscribe(this.showFull,'thumbClick');
-		//firstShow
-		this.subscribe(this.init,'fullShow');
+		this.subscribe(this.displayFull,'thumbClick');
+		this.subscribe(this.displayFull,'slideshowReq');
+		//this.subscribe(this.assignClasses,'thumbClick');
+		//fullShow
+		this.subscribe(this.init,'fullShow'); //first time only
 		this.subscribe(page.layout,'fullShow');
-		//fullCalculate
-		this.subscribe(this.showFull,'fullCalculate');
-		//main buttons
-		this.subscribe(this.playShow,'btnPlay');
-		this.subscribe(this.pauseShow,'btnPause');
-		this.subscribe(this.goNext,'btnNext');
-		//speed
-		this.subscribe(this.applySpeed,'speedChoice');
+		//buttons
+		//this.subscribe(this.assignClasses,'ctrlClick');
+		this.subscribe(this.doControl,'ctrlClick');
 
 	};
 
 	//METHODS===========================================================================================================
 
-	this.showFull=function(){ //takes a single array param for overloading
+	this.displayFull=function(){
 
 		var thumb=arguments[0],
 			full=$.data(thumb,'full'),
@@ -78,35 +73,79 @@ PBT.slideshow.setup=function(){
 		},50)
 	},
 
-	this.pauseShow=function(){
-		$('#controls span:eq(1)').addClass('disabled');
-		clearInterval(playInterval);
-	};
+	this.doControl=function(){
 
-	this.playShow=function(){
-		//playInterval available one up in scope chain for sharing
-		$('#controls span:eq(1)').removeClass('disabled');
-		playInterval=setInterval(function(){
-			var $activeLi=$('li.active:eq(0)');
-			if($activeLi.next().length>0){
-				that.publish($activeLi.next().find('img')[0],'thumbClick'); //----------------------------------------->
-			}
-			else{
-				$('#btnPlay').removeClass('disabled').prev().addClass('disabled');
-				that.pauseShow();
-			}
-		},speed)
-	};
+		var request=arguments[0],
+			//functions
+			pause,
+			play,
+			next,
+			slow,
+			medium,
+			fast,
+			reverse,
+			restart,
+			publish,
+			//shared by functions
+			speed=3000, //default slideshow interval
+			interval,
+			getter='next'; //direction indicator
 
-	this.goNext=function(){
-		that.publish($('li.active').next().find('img')[0],'thumbClick'); //-------------------------------------------->
-	};
-	
-	this.applySpeed=function(){
-		//speed available one up in scope chain for sharing
-		speed=arguments[0];
-		clearInterval(playInterval);
-		this.playShow();
+		//core functions
+		pause=function(){
+			clearInterval(interval);
+		};
+		play=function(){
+			interval=setInterval(function(){
+				var $li=$('li.active:eq(0)')[getter]();
+				if($li.length>0){
+					publish($li.find('img')[0]);
+				}
+				else{
+					pause();
+				}
+			},speed)
+		};
+		next=function(){
+			publish($('li.active:eq(0)')[getter]().find('img')[0]);
+		};
+		slow=function(){
+			speed=5000,
+			restart();
+		};
+		medium=function(){
+			speed=3000, //default
+			restart();
+		};
+		fast=function(){
+			speed=1000,
+			restart();
+		};
+		reverse=function(){
+			getter=getter==='next'?'prev':'next';
+		};
+		
+		//helpers
+		restart=function(){
+			clearInterval();
+			play();
+		};
+		publish=function(pub,evt){
+			that.publish(pub,'slideshowReq'); //----------------------------------------------------------------------->
+		};
+
+		//execute
+		switch(request){
+			case 'pause':pause();break;
+			case 'play':play();break;
+			case 'next':next();break;
+			case 'slow':slow();break;
+			case 'medium':medium();break;
+			case 'fast':fast();break;
+			case 'reverse':reverse();break;
+			default: break;
+		}
+
 	}.bind(this);
 
 	this.init=function(){
@@ -119,82 +158,28 @@ PBT.slideshow.setup=function(){
 
 		//delegated thumb clicks
 		$('#thumbs').bind('click',function(e){
-			if(e.target.src&&$(e.target).parent().is(':not(.active)')){ //could be the li for scaled-down images
-
-				//kinda ugle here...
-				clearInterval(playInterval);
-				$('#controls span').addClass('disabled');
-				$('#controls span:eq(0)').removeClass('disabled').find('button').removeClass('disabled');
-				$('#controls span:eq(0) button:eq(0)').addClass('disabled');
-
+			if(e.target.src&&$(e.target).parent().is(':not(.active)')){ //could be the li for scaled-down image
 				that.publish(e.target,'thumbClick'); //---------------------------------------------------------------->
 			}
 		});
 
-		//delegated main button clicks
-		$('#controls span:eq(0)').bind('click',function(e){
-			if(e.target.type==='button'){
+		//delegated button clicks
+		$('#controls').bind('click',function(e){
 
-				var $targ=$(e.target),
-					event=null,
-					toggleClasses=function(){
-						$targ.parent().find('button').removeClass('disabled');
-						$targ.addClass('disabled');
-					};
+			var $targ=$(e.target),
+				toggles={a:$targ,b:$targ.parent()}; //elements which might have class=disabled
 
-				if($targ.hasClass('disabled')){return false;}
-				switch(e.target.id){
-					case 'btnPause':
-						toggleClasses();
-						event='btnPause';
-						break;
-					case 'btnPlay':
-						toggleClasses();
-						event='btnPlay';
-						break;
-					case 'btnNext':
-						event='btnNext';
-						break;
-					default:
-						break;
-				}
+			if($targ.attr('type')==='button'){
 
-				that.publish(e.target,event); //----------------------------------------------------------------------->
-			}
-		});
+				//diabled buttons don't do anything
+				for(var i in toggles){if(toggles[i].hasClass('disabled')){return false}}
 
-		//delegated speed button clicks
-		$('#controls span:eq(1)').bind('click',function(e){
-			if(e.target.type==='button'){
-
-				var $targ=$(e.target),
-					speed=null;
-
-				if($targ.hasClass('speed')||$targ.parent().hasClass('disabled')){return false;}
-
-				$targ.parent().find('button').removeClass('speed');
-				$targ.addClass('speed');
-
-				switch(e.target.id){
-					case 'btnSlow':
-						speed=4000;
-						break;
-					case 'btnMedium':
-						speed=2500;
-						break;
-					case 'btnFast':
-						speed=750;
-						break;
-					default:
-						break;
-				}
-
-				that.publish(speed,'speedChoice'); //------------------------------------------------------------------>
+				that.publish($targ[0].id,'ctrlClick'); //--------------------------------------------------------------->
 			}
 		});
 
 		//start slideshow
-		$('#btnPlay').trigger('click');
+		that.publish('play','ctrlClick'); //---------------------------------------------------------------------------->
 
 	};
 }
