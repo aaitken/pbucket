@@ -11,6 +11,7 @@ PBT.slideshow.setup=function(){
 		//Aliases
 		page=PBT.page,
 		i=0, //show counter, used by init
+		intvl,
 		that=this; //re-usable reference for inner function convention
 
 	//PUBSUB============================================================================================================
@@ -39,12 +40,12 @@ PBT.slideshow.setup=function(){
 			full=$.data(thumb,'full'),
 			title=$.data(full,'meta').title,
 			desc=$.data(full,'meta').desc,
-			int;
+			intvl;
 
 		//don't show until full image is down
-		int=setInterval(function(){
+		intvl=setInterval(function(){
 			if($(full).attr('data-loaded')){
-				clearInterval(int);
+				clearInterval(intvl);
 
 				var $figure=$('#image figure:eq(0)'),
 					$figcaption=$('#image figcaption:eq(0)');
@@ -75,28 +76,22 @@ PBT.slideshow.setup=function(){
 
 	this.doControl=function(){
 
-		var request=arguments[0],
-			//functions
-			pause,
-			play,
-			next,
-			slow,
-			medium,
-			fast,
-			reverse,
+		var //slideshow object to receive core methods
+			ss={},
+			//helper functions
 			restart,
 			publish,
 			//shared by functions
-			speed=3000, //default slideshow interval
-			interval,
+			//intvl - avaliable up-scope
+			speed=3000, //default slideshow interval,
 			getter='next'; //direction indicator
 
-		//core functions
-		pause=function(){
-			clearInterval(interval);
+		//slideshow methods
+		ss.pause=function(){
+			clearInterval(intvl);
 		};
-		play=function(){
-			interval=setInterval(function(){
+		ss.play=function(){
+			intvl=setInterval(function(){
 				var $li=$('li.active:eq(0)')[getter]();
 				if($li.length>0){
 					publish($li.find('img')[0]);
@@ -104,47 +99,40 @@ PBT.slideshow.setup=function(){
 				else{
 					pause();
 				}
-			},speed)
+			},speed);
 		};
-		next=function(){
+		ss.next=function(){
 			publish($('li.active:eq(0)')[getter]().find('img')[0]);
+			restart();
 		};
-		slow=function(){
+		ss.slow=function(){
 			speed=5000,
 			restart();
 		};
-		medium=function(){
+		ss.medium=function(){
 			speed=3000, //default
 			restart();
 		};
-		fast=function(){
+		ss.fast=function(){
 			speed=1000,
 			restart();
 		};
-		reverse=function(){
+		ss.reverse=function(){
 			getter=getter==='next'?'prev':'next';
+			restart();
 		};
 		
 		//helpers
 		restart=function(){
-			clearInterval();
-			play();
+			clearInterval(intvl);
+			ss.play();
 		};
-		publish=function(pub,evt){
+		publish=function(pub){
 			that.publish(pub,'slideshowReq'); //----------------------------------------------------------------------->
 		};
 
 		//execute
-		switch(request){
-			case 'pause':pause();break;
-			case 'play':play();break;
-			case 'next':next();break;
-			case 'slow':slow();break;
-			case 'medium':medium();break;
-			case 'fast':fast();break;
-			case 'reverse':reverse();break;
-			default: break;
-		}
+		ss[arguments[0]]();
 
 	}.bind(this);
 
