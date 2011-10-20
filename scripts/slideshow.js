@@ -29,6 +29,7 @@ PBT.slideshow.setup=function(){
 		this.subscribe(this.doControl,'thumbClick');
 		//slideshowReq
 		this.subscribe(this.displayFull,'slideshowReq');
+		this.subscribe(this.doClasses,'ctrlClick');
 		//fullShow
 		this.subscribe(this.init,'fullShow'); //first time only
 		this.subscribe(page.layout,'fullShow');
@@ -76,6 +77,16 @@ PBT.slideshow.setup=function(){
 				$('#thumbs li').removeClass('active');
 				$(thumb).parent().addClass('active');
 
+				//button class + getter cheat
+				if(!$(thumb).parent().prev().length){
+					getter='next';
+					$('#last').addClass('disabled');
+				}
+				else if(!$(thumb).parent().next().length){
+					getter='prev';
+					$('#next').addClass('disabled');
+				}
+
 				that.publish(full,'fullShow'); //---------------------------------------------------------------------->
 			}
 		},50)
@@ -98,26 +109,29 @@ PBT.slideshow.setup=function(){
 
 		switch(arguments[0]){
 			case 'pause':
-				disableds={a:$el,b:$('#last'),c:$('#next'),d:$el.parent().next(),e:$el.parent().next().next(),f:$speedCtrls};
+				disableds={a:$el,d:$el.parent().next(),e:$el.parent().next().next(),f:$speedCtrls};
 				break;
 			case 'play':
+				disableds={a:$el,b:$('#last'),c:$('#next')};
+				break;
 			case 'last':
 			case 'next':
-				disableds={a:$('#play')};
+				disableds={b:$el.parent().next(),c:$el.parent().next().next(),d:$('#pause')};
 				break;
 			case 'slow':
 			case 'medium':
 			case 'fast':
 				$speedCtrls.find('button').removeClass('speed');
 				$el.addClass('speed');
-				disableds={a:$('#play')};
+				disableds={a:$('#play'),b:$('#last'),c:$('#next')};
 				break;
 			case 'reverse':
-				disableds={a:$('#play')};
+				disableds={a:$('#play'),b:$('#last'),c:$('#next')};
 				break;
 			default:
 				break;
 		}
+
 		for(var i in disableds){disableds[i].addClass('disabled')}
 	};
 
@@ -149,20 +163,16 @@ PBT.slideshow.setup=function(){
 					publish($li.find('img')[0],'slideshowReq');
 				}
 				else{
-					//swapButtons(); causing shifting
 					getter=getter==='next'?'prev':'next';
 					publish('pause','ctrlClick'); 
 				}
 			},speed);
 		};
 		ss.last=function(){
-			var inverseGetter=getter==='next'?'prev':'next';
-			publish($('li.active:eq(0)')[inverseGetter]().find('img')[0],'slideshowReq');
-			restart();
+			publish($('li.active:eq(0)').prev().find('img')[0],'slideshowReq');
 		};
 		ss.next=function(){
-			publish($('li.active:eq(0)')[getter]().find('img')[0],'slideshowReq');
-			restart();
+			publish($('li.active:eq(0)').next().find('img')[0],'slideshowReq');
 		};
 		ss.slow=function(){
 			speed=5000,
@@ -177,7 +187,6 @@ PBT.slideshow.setup=function(){
 			restart();
 		};
 		ss.reverse=function(){
-			//swapButtons(); causing shifting
 			getter=getter==='next'?'prev':'next';
 			restart();
 		};
