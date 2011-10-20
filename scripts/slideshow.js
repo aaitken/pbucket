@@ -11,7 +11,12 @@ PBT.slideshow.setup=function(){
 		//Aliases
 		page=PBT.page,
 		i=0, //show counter, used by init
+
+		//slideshow stuff
 		intvl,
+		speed=3000, //default slideshow interval
+		getter='next',
+
 		that=this; //re-usable reference for inner function convention
 
 	//PUBSUB============================================================================================================
@@ -21,14 +26,16 @@ PBT.slideshow.setup=function(){
 		//namespace subscibes its listeners to... <------------------------------------------------------------listeners
 		//thumbClick
 		this.subscribe(this.displayFull,'thumbClick');
+		this.subscribe(this.doControl,'thumbClick');
+		//slideshowReq
 		this.subscribe(this.displayFull,'slideshowReq');
-		//this.subscribe(this.assignClasses,'thumbClick');
 		//fullShow
 		this.subscribe(this.init,'fullShow'); //first time only
 		this.subscribe(page.layout,'fullShow');
 		//buttons
 		//this.subscribe(this.assignClasses,'ctrlClick');
 		this.subscribe(this.doControl,'ctrlClick');
+		this.subscribe(this.doClasses,'ctrlClick');
 
 	};
 
@@ -72,7 +79,47 @@ PBT.slideshow.setup=function(){
 				that.publish(full,'fullShow'); //---------------------------------------------------------------------->
 			}
 		},50)
-	},
+	};
+
+	this.doClasses=function(){
+
+		var $el=$('#'+arguments[0]), //clicked button
+			disableds, //obj defining elements to receive class=disabled
+			$speedCtrls=$('#controls span:eq(1)'),
+			$reverse=$('#controls span:eq(2) button');
+
+		//reset so no elements carry class=disabled
+		$el.parent().parent().find('.disabled').removeClass('disabled');
+
+		//reverse classes assigned here to catch slideshow re-start case
+		getter==='prev'?
+			$reverse.addClass('speed'):
+			$reverse.removeClass('speed');
+
+		switch(arguments[0]){
+			case 'pause':
+				disableds={a:$el,b:$('#last'),c:$('#next'),d:$el.parent().next(),e:$el.parent().next().next(),f:$speedCtrls};
+				break;
+			case 'play':
+			case 'last':
+			case 'next':
+				disableds={a:$('#play')};
+				break;
+			case 'slow':
+			case 'medium':
+			case 'fast':
+				$speedCtrls.find('button').removeClass('speed');
+				$el.addClass('speed');
+				disableds={a:$('#play')};
+				break;
+			case 'reverse':
+				disableds={a:$('#play')};
+				break;
+			default:
+				break;
+		}
+		for(var i in disableds){disableds[i].addClass('disabled')}
+	};
 
 	this.doControl=function(){
 
@@ -81,10 +128,15 @@ PBT.slideshow.setup=function(){
 			//helper functions
 			restart,
 			publish,
-			//shared by functions
+			swapButtons=function(){ //function for maintining directional association on next/last buttons after reversing order
+				$('#controls button:eq(3)').insertBefore($('#controls button:eq(2)'));
+				$('#controls button:eq(3)').insertAfter($('#controls button:eq(2)'));
+			};
+
+			//shared by functions:
 			//intvl - avaliable up-scope
-			speed=3000, //default slideshow interval,
-			getter='next'; //direction indicator
+			//speed - available up-scope
+			//getter - available up-scope
 
 		//slideshow methods
 		ss.pause=function(){
@@ -94,15 +146,22 @@ PBT.slideshow.setup=function(){
 			intvl=setInterval(function(){
 				var $li=$('li.active:eq(0)')[getter]();
 				if($li.length>0){
-					publish($li.find('img')[0]);
+					publish($li.find('img')[0],'slideshowReq');
 				}
 				else{
-					pause();
+					//swapButtons(); causing shifting
+					getter=getter==='next'?'prev':'next';
+					publish('pause','ctrlClick'); 
 				}
 			},speed);
 		};
+		ss.last=function(){
+			var inverseGetter=getter==='next'?'prev':'next';
+			publish($('li.active:eq(0)')[inverseGetter]().find('img')[0],'slideshowReq');
+			restart();
+		};
 		ss.next=function(){
-			publish($('li.active:eq(0)')[getter]().find('img')[0]);
+			publish($('li.active:eq(0)')[getter]().find('img')[0],'slideshowReq');
 			restart();
 		};
 		ss.slow=function(){
@@ -118,6 +177,7 @@ PBT.slideshow.setup=function(){
 			restart();
 		};
 		ss.reverse=function(){
+			//swapButtons(); causing shifting
 			getter=getter==='next'?'prev':'next';
 			restart();
 		};
@@ -127,12 +187,15 @@ PBT.slideshow.setup=function(){
 			clearInterval(intvl);
 			ss.play();
 		};
-		publish=function(pub){
-			that.publish(pub,'slideshowReq'); //----------------------------------------------------------------------->
+		publish=function(pub,evt){
+			that.publish(pub,evt); //---------------------------------------------------------------------------------->
 		};
 
-		//execute
-		ss[arguments[0]]();
+		//execute - button clicks simply pass their ids, which correspond to ss method names
+		//'pause' catches thumbclick case, which does not pass in an id
+		typeof arguments[0]==='string'?
+			ss[arguments[0]]():
+			publish('pause','ctrlClick');
 
 	}.bind(this);
 
@@ -159,15 +222,15 @@ PBT.slideshow.setup=function(){
 
 			if($targ.attr('type')==='button'){
 
-				//diabled buttons don't do anything
+				//disabled buttons don't do anything
 				for(var i in toggles){if(toggles[i].hasClass('disabled')){return false}}
 
-				that.publish($targ[0].id,'ctrlClick'); //--------------------------------------------------------------->
+				that.publish($targ[0].id,'ctrlClick'); //-------------------------------------------------------------->
 			}
 		});
 
 		//start slideshow
-		that.publish('play','ctrlClick'); //---------------------------------------------------------------------------->
+		that.publish('play','ctrlClick'); //--------------------------------------------------------------------------->
 
 	};
 }

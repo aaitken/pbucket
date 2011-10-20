@@ -115,6 +115,12 @@ html{
 	height:642px;
 	text-align:center;
 }
+.speed{
+	cursor:default;
+}
+span + span + span .speed{
+	cursor:pointer;
+}
 .thumbs{
 	width:100%;
 	text-align:center;
