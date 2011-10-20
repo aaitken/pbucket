@@ -145,6 +145,10 @@ PBT.page.setup=function(){
 
 		//align caption info to photo
 		$('figcaption').css('width',$img.width());
+
+		//IE < 9 has to recurse (with stack-deferred calls) until resets take
+		if ($.browser.msie && parseInt($.browser.version)<9 && docH>winH){setTimeout(function(){that.layout()},0)};
+
 	};
 
 	$(window).bind('resize',function(){

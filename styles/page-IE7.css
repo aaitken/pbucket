@@ -1,0 +1,11 @@
+#thumbs{
+	position:relative;
+	overflow-y:hidden;
+}
+#thumbs ul{
+	position:relative;
+	left:0;
+}
+button{
+	margin-right:5px;
+}

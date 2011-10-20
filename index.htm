@@ -1,12 +1,20 @@
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
-	<meta http-equiv="X-UA-Compatible" content="IE=8">
+	<meta http-equiv="X-UA-Compatible" content="IE=7">
 	<title></title>
 	<meta charset="UTF-8">
+	<!--[if lt IE 9]>
+	<script>
+		document.createElement('figure');
+		document.createElement('figcaption');
+	</script>
+	<![endif]-->
 
 	<link rel="stylesheet" href="styles/ericmeyer+.css">
 	<link rel="stylesheet" href="styles/page.css">
+	<!--[if lt IE 9]><link rel="stylesheet" href="styles/page-IE7+8.css"><![endif]-->
+	<!--[if IE 7]><link rel="stylesheet" href="styles/page-IE7.css"><![endif]-->
 
 </head>
 <body>
@@ -46,6 +54,7 @@
 			<ul class="uninitialized">
 				<!--populated dynamically with thumbs-->
 			</ul>
+			<br style="clear:left">
 		</div>
 	</div>
 
