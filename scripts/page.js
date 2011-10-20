@@ -25,6 +25,7 @@ PBT.page.setup=function(){
 		this.subscribe(slideshow.displayFull,'thumbFirst');
 		//resize
 		this.subscribe(this.layout,'resize');
+
 	};
 
 	//METHODS===========================================================================================================
@@ -130,7 +131,7 @@ PBT.page.setup=function(){
 		//test doc against window (and enforce 400 minimum height)
 		if(winH<docH){
 			$image.css('height',$image.height()-(docH-winH+20)+'px');
-			if($image.height()+bottomH<400){$image.css('height',400-bottomH+'px');} //400 minimum height
+			//if($image.height()+bottomH<400){$image.css('height',400-bottomH+'px');} //400 minimum height
 		}
 
 		//test image against container

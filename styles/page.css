@@ -109,11 +109,14 @@ html{
 	padding-top:50px;
 	padding-bottom:20px;
 	overflow:hidden;
+
 }
 .image{
 	display:block;
 	height:642px;
 	text-align:center;
+	min-width:900px;
+	min-height:233px;
 }
 .speed{
 	cursor:default;
