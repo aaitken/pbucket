@@ -79,11 +79,9 @@ PBT.slideshow.setup=function(){
 
 				//button class + getter cheat
 				if(!$(thumb).parent().prev().length){
-					getter='next';
 					$('#last').addClass('disabled');
 				}
 				else if(!$(thumb).parent().next().length){
-					getter='prev';
 					$('#next').addClass('disabled');
 				}
 
@@ -110,6 +108,8 @@ PBT.slideshow.setup=function(){
 		switch(arguments[0]){
 			case 'pause':
 				disableds={a:$el,d:$el.parent().next(),e:$el.parent().next().next(),f:$speedCtrls};
+				if(!$('li.active:eq(0)').prev().length){disableds.z=$('#last')}
+				if(!$('li.active:eq(0)').next().length){disableds.z=$('#next')}
 				break;
 			case 'play':
 				disableds={a:$el,b:$('#last'),c:$('#next')};
@@ -169,10 +169,14 @@ PBT.slideshow.setup=function(){
 			},speed);
 		};
 		ss.last=function(){
-			publish($('li.active:eq(0)').prev().find('img')[0],'slideshowReq');
+			var $li=$('li.active:eq(0)');
+			if($li.prev().is(':first')){getter='next'}
+			publish($li.prev().find('img')[0],'slideshowReq');
 		};
 		ss.next=function(){
-			publish($('li.active:eq(0)').next().find('img')[0],'slideshowReq');
+			var $li=$('li.active:eq(0)');
+			if($li.prev().is(':last')){getter='prev'}
+			publish($li.next().find('img')[0],'slideshowReq');
 		};
 		ss.slow=function(){
 			speed=5000,
